@@ -53,6 +53,7 @@ public class bidController {
         List<bidHistoryResponce> responce = new ArrayList<>();
         b.forEach(item->{
             auctionResponce res = auctionservice.getById(item.getAuctionId());
+            if(res!=null)
             responce.add(new bidHistoryResponce(item.getId(),res,item.getAmount(),item.getCreationDate()));
         });
         return responce;

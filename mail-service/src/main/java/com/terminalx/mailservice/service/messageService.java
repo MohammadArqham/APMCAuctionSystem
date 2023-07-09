@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class messageService {
@@ -19,16 +23,19 @@ public class messageService {
     private JavaMailSender mailSender;
 
     Log log = new Log("mail-service","service","messageService");
-    public void sendMail(String to,String subject,String body) {
+    public void sendMail(String to,String subject,String body) throws UnsupportedEncodingException {
 
         log.log("inside sendMail method");
+        String decodedString = URLDecoder.decode(body, StandardCharsets.UTF_8.name());
+        String decodedString2 = URLDecoder.decode(subject, StandardCharsets.UTF_8.name());
+
 
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setFrom("mohammadarqham182002@gmail.com");
         message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
+        message.setSubject(decodedString2);
+        message.setText(decodedString);
 
 
         mailSender.send(message);

@@ -2,10 +2,7 @@ package com.terminalx.auctionservice.service;
 
 import com.terminalx.auctionservice.dto.auctionResponce;
 import com.terminalx.auctionservice.dto.bidResponce;
-import com.terminalx.auctionservice.model.AuctionItem;
-import com.terminalx.auctionservice.model.Product;
-import com.terminalx.auctionservice.model.auction;
-import com.terminalx.auctionservice.model.bid;
+import com.terminalx.auctionservice.model.*;
 import com.terminalx.auctionservice.repository.auctionRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,12 +72,22 @@ public class auctionService {
     }
 
     public auctionResponce getById(String id) {
-        auction a= auctionRepo.findById(id).get();
-        Product p = apiservice.getProductById(a.getProductId());
-        List<bidResponce> bidlist = bidservice.getByAuctionId(a.getId());
+        System.out.println("--->" + id);
+        Optional<auction> optionalAuction = auctionRepo.findById(id);
 
-        return new auctionResponce(a.getId(),a.getStartTime(),a.getEndTime(),a.getClosed(),p,bidlist);
+        if (optionalAuction.isPresent()) {
+            auction a = optionalAuction.get();
+            Product p = apiservice.getProductById(a.getProductId());
+            List<bidResponce> bidlist = bidservice.getByAuctionId(a.getId());
+
+            if (p != null && bidlist != null) {
+                return new auctionResponce(a.getId(), a.getStartTime(), a.getEndTime(), a.getClosed(), p, bidlist);
+            }
+        }
+
+        return null; // Return null in case of any null values encountered
     }
+
 
 
     public List<auctionResponce> getAllAuctions() {
@@ -121,9 +128,9 @@ public class auctionService {
                     + "you have won the bid with AuctionId ID: " + winner.getAuctionId() + "\n"
                     + "with ₹ " + winner.getAmount();
 
-            String encodedString = URLEncoder.encode(message, StandardCharsets.UTF_8);
 
-            apiservice.senMail(winner.getBidder().getEmail(),encodedString);
+
+            apiservice.senMail(winner.getBidder().getEmail(),message);
         }
 
     }
@@ -136,6 +143,17 @@ public class auctionService {
                 .collect(Collectors.toList());
 
         return filteredAuctions;
+    }
+
+    public List<auctionResponce> getByCategory(String category) {
+        List<auctionResponce> allItems = getAllAuctions();
+
+        return allItems.stream()
+                .filter(item -> {
+                    Category itemCategory = item.getProduct().getCategory();
+                    return itemCategory != null && itemCategory.toString().equals(category);
+                })
+                .toList();
     }
 
 }

@@ -109,7 +109,7 @@ public class productController {
         p.setProductImage(ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/product/download/")
                 .path(fd.getId()).toUriString());
-
+//localhost:8084/product/download/1213
         service.addOne(p);
         return "product added..!";
     }

@@ -47,6 +47,10 @@ public class auctionController {
        return service.getAllAuctions();
     }
 
+    @GetMapping("/getbyCategory/{category}")
+    public List<auctionResponce> getbyCategory(@PathVariable String category){
+        return service.getByCategory(category.toUpperCase());
+    }
     @GetMapping("/getByUserId/{id}")
     public List<auctionResponce> getByUserId(@PathVariable String id){
         return service. getByUserId(id);

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 
 @RequestMapping("/mail")
@@ -30,7 +31,7 @@ public class messageController {
     @GetMapping("/sendMail")
     public void sendMail(@RequestParam("to") String to,
                          @RequestParam("subject") String subject,
-                         @RequestParam("body") String body){
+                         @RequestParam("body") String body) throws UnsupportedEncodingException {
         log.log("inside sendMail function");
         messageservice.sendMail(to,subject,body);
     }
